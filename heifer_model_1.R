@@ -2,6 +2,10 @@ library(deSolve)
 library(ggplot2)
 require(gridExtra)
 library(scales)
+library(readr)
+
+heifer_data=read_csv('https://raw.githubusercontent.com/rhensen/modnut/main/modnut_heifers.csv') 
+
 
 #######################################
 START<-0; FINISH<-200; STEP<-0.125
