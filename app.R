@@ -12,17 +12,16 @@ library(shinythemes)
 dmi = read_csv('https://raw.githubusercontent.com/rhensen/modnut/main/dmi_example.csv')
 
 shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
-  
+  interval=round(24/interval)
   #call the first cow
-  dmi_2=dmi[1:num_feeds,cow] #can subset by [row1:20,column]
-  
+  dmi_2=dmi[num_feeds[[1]]:num_feeds[[2]],cow] #can subset by [row1:20,column]
+  print(dmi_2)
   #get the starting stock for s1. 
   dmi_0=as.numeric(dmi_2[1,1])
   
   #this is the function that runs our daily step
   full_model= function(stocks){
-    
-    START<-0; FINISH<-(24/interval)+1; STEP<-1
+    START<-0; FINISH<-interval+1; STEP<-1
     
     # Create time vector
     simtime <- seq(START, FINISH, by=STEP)
@@ -98,7 +97,6 @@ shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
     names(stocks)=c('sS1','sS2','sS3','sS4')
     output=full_model(stocks)
     stocks=c(output[interval,]$sS1,output[interval,]$sS2,output[interval,]$sS3,output[interval,]$sS4)
-    day=i 
     output$day=rep(i,nrow(output))
     results[[i]]=output
   }
@@ -135,10 +133,10 @@ ui <- fluidPage(theme = shinytheme("paper"),h1("Precision Rumen Kinetics Model",
         sidebarPanel(
           fileInput(inputId = "dmi_file", label = "Import  DMI file", multiple = F,placeholder = " No file selected", accept = c(".csv")),
           sliderInput("feeds",
-                      "Feeding Period (Days)",
+                      "Time Range Select (from data)",
                       min = 0,
                       max = NROW(dmi),
-                      value = 3),
+                      value = c(0,20)),
           sliderInput("interval",
                       "Number of Feedings Per Day",
                       min = 1,
