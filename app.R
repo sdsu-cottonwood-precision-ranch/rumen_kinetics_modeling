@@ -22,7 +22,7 @@ shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
   #this is the function that runs our daily step
   full_model= function(stocks){
     
-    START<-0; FINISH<-interval+1; STEP<-1
+    START<-0; FINISH<-(24/interval)+1; STEP<-1
     
     # Create time vector
     simtime <- seq(START, FINISH, by=STEP)
@@ -129,22 +129,22 @@ shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
 
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(theme = shinytheme("paper"),h1("Modnut Precision Ag Application", align = "center"),
+ui <- fluidPage(theme = shinytheme("paper"),h1("Precision Rumen Kinetics Model", align = "center"),
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
           fileInput(inputId = "dmi_file", label = "Import  DMI file", multiple = F,placeholder = " No file selected", accept = c(".csv")),
           sliderInput("feeds",
-                      "Number of Feedings",
+                      "Feeding Period (Days)",
                       min = 0,
                       max = NROW(dmi),
                       value = 3),
           sliderInput("interval",
-                      "Feeding interval (hours)",
-                      min = 0,
+                      "Number of Feedings Per Day",
+                      min = 1,
                       max = 24,
-                      value = 24),
-          selectInput("cow", "Choose the Cow based on their tag number",
+                      value = 1),
+          selectInput("cow", "Select unique animal to display",
                       choices=  names(dmi[,-c(1)]),
                       multiple=F),
           sliderInput("ka",
@@ -165,10 +165,15 @@ ui <- fluidPage(theme = shinytheme("paper"),h1("Modnut Precision Ag Application"
 
         # Show a plot of the generated distribution
         mainPanel(
-            h3('Model Output Plot', align='center'),
+            tabsetPanel(type = "tabs",
+            tabPanel("Instructions",
+            h3('Jaimie to add', align='center')),
+            tabPanel("Model Results",
+           h3('Model Output Plot', align='center'),
            plotOutput("distPlot"),
            h3('DMI Data', align='center'),
            dataTableOutput('data')
+            ))
         )
     )
 )
