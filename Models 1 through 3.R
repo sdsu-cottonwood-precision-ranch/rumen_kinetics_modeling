@@ -131,7 +131,7 @@ p2
 ### Model 3 Precision Data Integration ###
 
 #load the data from gitub repo
-dmi = read_csv('https://raw.githubusercontent.com/rhensen/modnut/main/dmi_example.csv')
+dmi = read_csv('https://raw.githubusercontent.com/sdsu-cottonwood-precision-ranch/rumen_kinetics_modeling/main/data/dmi_example.csv')
 
 #Option to export data to compture to perform checks
 #write.csv(dmi,"C:/Users/hector.menendez/Desktop/SDSU_2020/MODNUT/dmi.csv")
