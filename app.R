@@ -9,7 +9,8 @@ library(purrr)
 library(DT)
 library(shinythemes)
 
-dmi = read_csv('https://raw.githubusercontent.com/rhensen/modnut/main/dmi_example.csv')
+#dmi = read_csv('https://raw.githubusercontent.com/rhensen/modnut/main/dmi_example.csv')
+dmi = read_csv('data/dmi_example.csv')
 
 shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
   interval=round(24/interval)
@@ -127,58 +128,126 @@ shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
 
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(theme = shinytheme("paper"),h1("Precision Rumen Kinetics Model", align = "center"),
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-          fileInput(inputId = "dmi_file", label = "Import  DMI file", multiple = F,placeholder = " No file selected", accept = c(".csv")),
-          sliderInput("feeds",
-                      "Time Range Select (from data)",
-                      min = 0,
-                      max = NROW(dmi),
-                      value = c(0,20)),
-          sliderInput("interval",
-                      "Number of Feedings Per Day",
-                      min = 1,
-                      max = 24,
-                      value = 1),
-          selectInput("cow", "Select unique animal to display",
-                      choices=  names(dmi[,-c(1)]),
-                      multiple=F),
-          sliderInput("ka",
-                      "aKa",
-                      min = 0,
-                      max = 1,
-                      value =0.02),
-          sliderInput("kd",
-                      "Kd",
-                      min = 0,
-                      max = 1,
-                      value =0.25),
-          sliderInput("kp",
-                      "Kp",
-                      min = 0,
-                      max = 1,
-                      value =0.05)),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            tabsetPanel(type = "tabs",
-            tabPanel("Instructions",
-            h3('Jaimie to add', align='center')),
-            tabPanel("Model Results",
-           h3('Model Output Plot', align='center'),
-           plotOutput("distPlot"),
-           h3('DMI Data', align='center'),
-           dataTableOutput('data')
-            ))
-        )
-    )
-)
+ui <- fluidPage( 
+  #tags$head(includeHTML(("google-analytics.html"))),
+                  titlePanel(tags$head(tags$link(rel = "icon", type = "image/png", href = "favicon.png"),
+                                        tags$title("RangeCC")),title=div(img(src="SDSU_logo2.png", height = '100px',
+                                           width = '@00px',
+                                           style = "margin:10px 10px"),"Precision Rumen Kinetics Model")),
+                  
+                  tabsetPanel(
+                    
+                    tabPanel("Rumen Kinetics Parameters",
+                            
+                sidebarLayout(
+                  sidebarPanel(
+                    fileInput(inputId = "dmi_file", label = "Import  DMI file", multiple = F,placeholder = " No file selected", accept = c(".csv")),
+                    sliderInput("feeds",
+                                "Time Range Select (from data)",
+                                min = 0,
+                                max = NROW(dmi),
+                                value = c(0,20)),
+                    sliderInput("interval",
+                                "Number of Feedings Per Day",
+                                min = 1,
+                                max = 24,
+                                value = 1),
+                    selectInput("cow", "Select unique animal to display",
+                                choices=  names(dmi[,-c(1)]),
+                                multiple=F),
+                    sliderInput("ka",
+                                "Ka",
+                                min = 0,
+                                max = 1,
+                                value =0.02),
+                    sliderInput("kd",
+                                "Kd",
+                                min = 0,
+                                max = 1,
+                                value =0.25),
+                    sliderInput("kp",
+                                "Kp",
+                                min = 0,
+                                max = 1,
+                                value =0.05)),
+                  
+                  #
+                 # mainPanel(
+                #    DT::dataTableOutput("values1"),
+                #    verbatimTextOutput('mean')
+                #  )
+                  
+                  # Show a plot of the generated distribution
+                  mainPanel(
+                   # tabsetPanel( type = "tabs",
+                    #           tabPanel("Instructions",
+                     #                    h3('Jaimie to add', align='center')),
+                      #          tabPanel("Model Results",
+                                         h3('Model Output Plot', align='center'),
+                                         plotOutput("distPlot"),
+                                         h3('DMI Data', align='center'),
+                                         dataTableOutput('data')
+                                )
+                  )
+                ),
+                tabPanel("Additional Information",
+                         h4("The purpose of this app is to show how linear functions, like the kd, ka, and kp rates of 5, 25, and 15%/h can create non-linear behavior when used in a dynamic-mechanistic model. Notice that there is a loss in the model resolution or granularity by how digesta is handled in the model. After a discrete feeding event causes the feed to enter the rumen (S1), a perfect mixing model is applied to the model that remains mathematical and computationally simple enough for the user to draw insights. "),
+                         
+                         h3("Input Variables"),
+                         tags$ul(
+                           tags$li("Browse feature: This feature allows the import of daily data from excel which must be saved as CSV,  contain a TIME column and unique animal ID numbers "),
+                         
+                           tags$li("Feeding Period (Days): This represents the days that an animal is fed over time that will be represented graphically."),
+                          
+                           tags$li('Number of Feedings Per Day: This represents the number of feeding events at a subdaily level. For example, "2" would mean that the animal is fed twice a day (#).'),
+   
+                           tags$li("Ka: This respresents the absorption rate of rumen digesta into the rumen wall (%/hour). "),
+                           tags$li("Kd: This represents the degradation rate of rumen digesta in the rumen (%/hour). "),
+                           tags$li("Kp: This represents the passage rate of rumen digesta out of the rumen (%/hour). ")
+                   
+                           
+                         ),
+                         
+                         
+                         
+                         h4("Contributors"),
+                         tags$ul(
+                           tags$li("Hector Menendez III, Assistant Professor Department of Animal Science, South Dakota State University,", a("hector.menendez@sdstate.edu", href='mailto:hector.menendez@sdstate.edu'),
+                                   tags$li("Reid Hensen, Hensen LLC"),
+                           tags$li("Jameson Brennan, Assistant Professor Department of Animal Science, South Dakota State University University,", a("jameson.brennan@sdstate.edu", href='mailto:jameson.brennan@sdstate.edu') 
+                                   
+                                           
+                                   ))),
+                         
+                         h4("Other Great Information"),
+                         # p("For additional information on SDSU Extension programs and publications click the button below:"),
+                         p("SDSU Extension is an equal opportunity provider and employer in accordance with the nondiscrimination policies of South Dakota State University, the South Dakota Board of Regents and the United States Department of Agriculture. Learn more at extension.sdstate.edu or click on the button below:"),
+                         a(h4("Extension Link", class = "btn btn-default action-button" , 
+                              style = "fontweight:600"), target = "_blank",
+                           href = 'https://extension.sdstate.edu/'),
+                         tags$br(),
+                         tags$br(),
+                         tags$sup("Model adatped from Tedeschi, L. O., & Fox, D. G. (2020). Ruminant Nutrition System. Xanedu Publishing Incorporated. "),
+                         tags$br(),
+                         tags$br(),
+                         tags$li('Figure 1: Example of data format for importing .csv data.'),
+                         img(src="input.PNG", height = '400px',
+                             width = '1200px',
+                             align="left"),
+                         tags$br(),
+                         tags$br(),
+                         
+                         tags$br(),
+                         tags$br(),
+   
+                         
+                         
+                )))
+#)
 
 # Define server logic required to draw a histogram
 server <- function(input, output,session) {
-    
+  
   DMI <- reactive({
     if(is_empty(input$dmi_file)){
       return(dmi)
@@ -187,7 +256,7 @@ server <- function(input, output,session) {
       print(input$dmi_file)
       df=read_csv(input$dmi_file$datapath)
       updateSelectInput(session, "cow", "Choose the cow based on their tag number",
-                      choices=  names(df[,-c(1)]))
+                        choices=  names(df[,-c(1)]))
       updateSliderInput(session, "feeds",
                         "Number of Feedings",
                         min = 0,
@@ -196,11 +265,11 @@ server <- function(input, output,session) {
       return(df)
     })
   })
-
-    output$distPlot <- renderPlot({
-        shiny_app_function(DMI(),input$feeds,input$interval,input$cow,input$ka,input$kd,input$kp)
-    })
-    output$data <- renderDataTable(DT::datatable(DMI()))
+  
+  output$distPlot <- renderPlot({
+    shiny_app_function(DMI(),input$feeds,input$interval,input$cow,input$ka,input$kd,input$kp)
+  })
+  output$data <- renderDataTable(DT::datatable(DMI()))
 }
 
 # Run the application 
