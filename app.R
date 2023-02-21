@@ -9,6 +9,7 @@ library(purrr)
 library(DT)
 library(shinythemes)
 
+#I made a comment change here
 dmi = read_csv('data/dmi_example.csv')
 
 shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
