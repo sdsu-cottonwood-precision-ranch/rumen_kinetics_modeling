@@ -9,12 +9,14 @@ library(purrr)
 library(DT)
 library(shinythemes)
 
+#dmi = read_csv('https://raw.githubusercontent.com/rhensen/modnut/main/dmi_example.csv')
 dmi = read_csv('data/dmi_example.csv')
 
 shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
   interval=round(24/interval)
   #call the first cow
   dmi_2=dmi[num_feeds[[1]]:num_feeds[[2]],cow] #can subset by [row1:20,column]
+  print(dmi_2)
   #get the starting stock for s1. 
   dmi_0=as.numeric(dmi_2[1,1])
   
@@ -128,8 +130,7 @@ shiny_app_function= function(dmi,num_feeds,interval,cow,ka,kd,kp){
 # Define UI for application that draws a histogram
 ui <- fluidPage( 
   #tags$head(includeHTML(("google-analytics.html"))),
-                  titlePanel(tags$head(tags$link(rel = "icon", type = "image/png", href = "favicon.png"),
-                                        tags$title("Rumen Kinetics")),title=div(img(src="SDSU_logo2.png", height = '100px',
+                  titlePanel(title=div(img(src="SDSU_logo2.png", height = '100px',
                                            width = '@00px',
                                            style = "margin:10px 10px"),"Precision Rumen Kinetics Model")),
                   
@@ -169,13 +170,22 @@ ui <- fluidPage(
                                 max = 1,
                                 value =0.05)),
                   
+                  #
+                 # mainPanel(
+                #    DT::dataTableOutput("values1"),
+                #    verbatimTextOutput('mean')
+                #  )
                   
                   # Show a plot of the generated distribution
                   mainPanel(
+                   # tabsetPanel( type = "tabs",
+                    #           tabPanel("Instructions",
+                     #                    h3('Jaimie to add', align='center')),
+                      #          tabPanel("Model Results",
                                          h3('Model Output Plot', align='center'),
                                          plotOutput("distPlot"),
                                          h3('DMI Data', align='center'),
-                                         DT::dataTableOutput('data')
+                                         dataTableOutput('data')
                                 )
                   )
                 ),
@@ -202,6 +212,7 @@ ui <- fluidPage(
                          h4("Contributors"),
                          tags$ul(
                            tags$li("Hector Menendez III, Assistant Professor Department of Animal Science, South Dakota State University,", a("hector.menendez@sdstate.edu", href='mailto:hector.menendez@sdstate.edu'),
+                                   tags$li("Luis Tedeschi, Professor Department of Animal Science, Texas A&M University"),
                                    tags$li("Reid Hensen, Hensen LLC"),
                            tags$li("Jameson Brennan, Assistant Professor Department of Animal Science, South Dakota State University University,", a("jameson.brennan@sdstate.edu", href='mailto:jameson.brennan@sdstate.edu') 
                                    
@@ -258,7 +269,7 @@ server <- function(input, output,session) {
   output$distPlot <- renderPlot({
     shiny_app_function(DMI(),input$feeds,input$interval,input$cow,input$ka,input$kd,input$kp)
   })
-  output$data <- renderDataTable(DT::datatable(DMI(),rownames	= F))
+  output$data <- renderDataTable(DT::datatable(DMI()))
 }
 
 # Run the application 
